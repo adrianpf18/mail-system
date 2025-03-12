@@ -13,6 +13,7 @@ public class MailClient
     private String user;
     
     private MailItem lastReciveMail;
+    
 
     /**
      * Create a mail client run by user and attached to the given server.
