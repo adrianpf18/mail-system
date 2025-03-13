@@ -1,3 +1,4 @@
+import java.util.Iterator;
 /**
  * A class to model a simple email client. The client is run by a
  * particular user, and sends and retrieves mail via a particular server.
@@ -12,7 +13,7 @@ public class MailClient
     // The user running this client.
     private String user;
     
-    private MailItem lastReciveMail;
+    private MailItem lastRecievedMail = null;
     
 
     /**
@@ -28,8 +29,14 @@ public class MailClient
      * Return the next mail item (if any) for this user.
      */
     public MailItem getNextMailItem()
-    {
-        return server.getNextMailItem(user);
+    {   
+        MailItem item = server.getNextMailItem(user);
+        
+        if(item != null) {
+            lastRecievedMail = item;
+        }
+        
+        return item;
     }
 
     /**
@@ -44,6 +51,7 @@ public class MailClient
         }
         else {
             item.print();
+            lastRecievedMail = item;
         }
     }
 
@@ -72,8 +80,9 @@ public class MailClient
         return "";
     }
     
-     public MailItem getLastReceivedMail() {
-        return lastReciveMail;
+    public MailItem getLastReceivedMail() {
+    
+    return lastRecievedMail;
     }
         
     
