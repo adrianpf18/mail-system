@@ -13,7 +13,7 @@ public class MailClient
     // The user running this client.
     private String user;
     
-    private MailItem lastRecievedMail = null;
+    private MailItem lastRecievedMail;
     
 
     /**
@@ -73,7 +73,17 @@ public class MailClient
     }
     
     public void receiveAndAutorespond(){
+        MailItem lastRecievedMail = server.getNextMailItem(user);
         
+        if(lastRecievedMail != null) {
+            String quienRecibe = lastRecievedMail.getTo();
+            String remitente = lastRecievedMail.getFrom();
+            String asuntoMensaje = "RE: " + lastRecievedMail.getSubject ();
+            String contenidoRespuesta = "Gracias por su mensaje. Le contestare lo antes posible. " + lastRecievedMail.getMessage();
+            
+            sendMailItem(remitente, asuntoMensaje, contenidoRespuesta);
+            
+        }
     }
     
     public String getStatus() {
@@ -81,7 +91,6 @@ public class MailClient
     }
     
     public MailItem getLastReceivedMail() {
-    
     return lastRecievedMail;
     }
         
