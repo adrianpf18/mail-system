@@ -32,7 +32,17 @@ public class MailClient
     {   
         MailItem item = server.getNextMailItem(user);
         
+        
         if(item != null) {
+            String mensaje = item.getMessage().toLowerCase();
+            String asunto = item.getSubject().toLowerCase();
+            String persona = user.toLowerCase();
+            boolean asuntoConNombrePersona = asunto.contains(persona);
+            
+            if((mensaje.contains("loteria" ) || mensaje.contains("viagra" )) && asuntoConNombrePersona == false) {
+                return null;
+            }
+             
             lastRecievedMail = item;
         }
         
@@ -45,13 +55,13 @@ public class MailClient
      */
     public void printNextMailItem()
     {
-        MailItem item = server.getNextMailItem(user);
+        MailItem item = getNextMailItem();
+        
         if(item == null) {
             System.out.println("No new mail.");
         }
         else {
             item.print();
-            lastRecievedMail = item;
         }
     }
 
@@ -73,16 +83,16 @@ public class MailClient
     }
     
     public void receiveAndAutorespond(){
-        MailItem lastRecievedMail = server.getNextMailItem(user);
-        
+        MailItem item = getNextMailItem();
+       
         if(lastRecievedMail != null) {
+            lastRecievedMail = item;
             String quienRecibe = lastRecievedMail.getTo();
             String remitente = lastRecievedMail.getFrom();
             String asuntoMensaje = "RE: " + lastRecievedMail.getSubject ();
             String contenidoRespuesta = "Gracias por su mensaje. Le contestare lo antes posible. " + lastRecievedMail.getMessage();
             
             sendMailItem(remitente, asuntoMensaje, contenidoRespuesta);
-            
         }
     }
     
@@ -91,9 +101,8 @@ public class MailClient
     }
     
     public MailItem getLastReceivedMail() {
-    return lastRecievedMail;
+        return lastRecievedMail;
     }
-        
-    
-     
 }
+        
+
