@@ -12,9 +12,14 @@ public class MailClient
     private MailServer server;
     // The user running this client.
     private String user;
-    
+
     private MailItem lastRecievedMail;
     
+    private int numMensajesRecibidos = 0;
+    private int numMensajesEnviados = 0;
+    private String mensajeLargoRemitente = " ";
+    private int numCaracteresMensajesLarga = 0;
+  
 
     /**
      * Create a mail client run by user and attached to the given server.
@@ -42,8 +47,17 @@ public class MailClient
             if((mensaje.contains("loteria" ) || mensaje.contains("viagra" )) && asuntoConNombrePersona == false) {
                 return null;
             }
-             
+            
+            int longitudMensaje = 0;
+            
+            if(numCaracteresMensajesLarga < mensaje.length()) {
+                numCaracteresMensajesLarga = mensaje.length();
+                
+                mensajeLargoRemitente = item.getFrom();
+            }
             lastRecievedMail = item;
+            numMensajesRecibidos++;
+             
         }
         
         return item;
@@ -75,17 +89,19 @@ public class MailClient
     {
         MailItem item = new MailItem(user, to, subject, message);
         server.post(item);
+        numMensajesEnviados++;
     }
     
    
     public int getNumberOfMessageInServer(){
-        return server.howManyMailItems(user);
+        numMensajesRecibidos = server.howManyMailItems(user);
+        return numMensajesRecibidos;
     }
     
     public void receiveAndAutorespond(){
         MailItem item = getNextMailItem();
        
-        if(lastRecievedMail != null) {
+        if(item != null) {
             lastRecievedMail = item;
             String quienRecibe = lastRecievedMail.getTo();
             String remitente = lastRecievedMail.getFrom();
@@ -93,11 +109,16 @@ public class MailClient
             String contenidoRespuesta = "Gracias por su mensaje. Le contestare lo antes posible. " + lastRecievedMail.getMessage();
             
             sendMailItem(remitente, asuntoMensaje, contenidoRespuesta);
+            numMensajesEnviados++;
         }
     }
     
     public String getStatus() {
-        return "";
+        if(numMensajesRecibidos == 0) {
+            return "0,0,,";
+        }else {
+            return numMensajesRecibidos + "," + numMensajesEnviados + "," + mensajeLargoRemitente + "," + numCaracteresMensajesLarga;
+        }
     }
     
     public MailItem getLastReceivedMail() {
